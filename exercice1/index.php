@@ -10,7 +10,17 @@ Connexion à MySQL avec PDO
 <h1>
 Interrogation de la table voitures avec PDO
 </h1>
-
+<form method="get">
+    <label for="s">Rechercher par Marque:</label>
+    <input type="search" name="s" placeholder="Rechercher une marque" autocomplete="off">
+    <input type="submit" name="envoyer">
+    <br/>
+    <label for="carburant">Filtrer par carburant:</label>
+    <input type="search" id="carburant" name="carburant">
+    <br/>
+    <label for="modele">Filtrer par modele:</label>
+    <input type="search" id="modele" name="modele">
+</form>
 <?php
 
 require("connect.php");
@@ -55,7 +65,38 @@ echo "<tr><td>".$row['Id_Voiture']."</td>
           <td>".$row['critaire']."</td>
           <td>".$row['boite_de_vitesse']."</td></tr><br/>\n";
   ?>
+  <?php
+  $allcars = $connexion->query($sql);
+  if(isset($_GET['s']) AND !empty($_GET['s'])) {
+    $recherche = htmlspecialchars($_GET['s']);
+    // $carburant = ($_GET['Carburant']);
+    // $modele = ($_GET['modele']);
+    $allcars = $connexion->query( 'SELECT * FROM voiture WHERE concat(Marques,Carburant,modele) LIKE "%'.$recherche.'%"');
+    }
+
+  ?>
 </table>
+<section class="afficher_marque">
+        <?php
+        if($allcars->rowcount() > 0){
+            while($Marque = $allcars->fetch()){
+               ?>
+        <p><?=
+        "<table><tr><td>"
+        . $Marque['Marques'] . "</td>
+        <td>" . $Marque['Carburant'] . "</td>
+        <td>" . $Marque['modele'] . " </td> 
+        </tr></table>\n";
+        ?>  
+        </p>
+        <?php
+         } }else{ ?>
+        <p>Aucune Marque trouvée</p>
+        <?php
+    } 
+    ?>
+    </section>
 <?php } ?>
+
 </body>
 </html>
